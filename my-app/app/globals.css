@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --paper: #fbfaf6;
+  --ink: #17211d;
+  --muted: #68736b;
+  --line: #d9ddd4;
+  --orange: #d56732;
+  --orange-wash: rgba(213, 103, 50, 0.18);
+  --green: #56836a;
+  --green-wash: rgba(86, 131, 106, 0.15);
+  --display: 'Space Grotesk', sans-serif;
+  --mono: 'DM Mono', monospace;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--display);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 85% 8%, rgba(213, 103, 50, 0.1), transparent 25rem),
+    var(--paper);
+}
+
+main {
+  width: min(100% - 40px, 920px);
+  margin: 0 auto;
+  padding: 72px 0 96px;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2 {
+  color: var(--ink);
+  font-family: var(--display);
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  margin-bottom: 48px;
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  line-height: 0.94;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: clamp(1.7rem, 4vw, 2.35rem);
+  line-height: 1;
+}
+
+main > div {
+  border-top: 1px solid var(--line);
+  padding: 28px 0 34px;
+}
+
+main > div > p {
+  color: var(--muted);
+  font-size: 1.08rem;
+}
+
+form {
+  display: grid;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+label {
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 16px;
+  color: var(--ink);
+  background: var(--paper);
+  font: 0.92rem/1.6 var(--mono);
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+textarea:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-wash);
+}
+
+button {
+  width: fit-content;
+  border: 0;
+  border-radius: 3px;
+  padding: 12px 18px;
+  color: #fffdf8;
+  background: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+button:hover {
+  background: var(--orange);
+  transform: translateY(-1px);
+}
+
+button:focus-visible {
+  outline: 3px solid var(--orange-wash);
+  outline-offset: 3px;
+}
+
+pre {
+  overflow-x: auto;
+  border-left: 3px solid var(--green);
+  margin: 28px 0 0;
+  padding-left: 16px;
+  color: var(--ink);
+  font: 0.9rem/1.6 var(--mono);
+}
+
+@media (max-width: 600px) {
+  main {
+    width: min(100% - 32px, 920px);
+    padding-top: 44px;
+  }
+
+  h1 {
+    margin-bottom: 34px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
