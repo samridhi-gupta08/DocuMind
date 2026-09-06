@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+Flask
+Authlib
+python-dotenv
