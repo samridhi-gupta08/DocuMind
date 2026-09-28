@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
+const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 export default function Fetch() {
   const [rootMessage, setRootMessage] = useState('Loading...');
   const [healthStatus, setHealthStatus] = useState('Loading...');
@@ -15,8 +15,8 @@ export default function Fetch() {
     async function getBackendStatus() {
       try {
         const [rootResponse, healthResponse] = await Promise.all([
-          window.fetch('http://localhost:8000/', { signal: controller.signal }),
-          window.fetch('http://localhost:8000/health', { signal: controller.signal }),
+        window.fetch(`${API}/`, { signal: controller.signal }),
+window.fetch(`${API}/health`, { signal: controller.signal }),
         ]);
 
         if (!rootResponse.ok || !healthResponse.ok) {
@@ -46,7 +46,7 @@ export default function Fetch() {
     setEchoResponse(null);
 
     try {
-      const response = await window.fetch('http://localhost:8000/echo', {
+    const response = await window.fetch(`${API}/echo`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: payload,
