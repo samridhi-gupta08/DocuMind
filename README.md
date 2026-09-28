@@ -1,209 +1,93 @@
-# Demo Frontend and Backend
+# Backend and Frontend Connectivity Demo
 
-This workspace contains one shared FastAPI backend and two equivalent React
-frontends:
+This project demonstrates how a Vite React frontend and a Next.js frontend communicate with a shared Python backend (with support for both **FastAPI** and **Flask**) connected to **Supabase** (PostgreSQL) or local **SQLite**.
 
-- `backend`: FastAPI API on `http://localhost:8000`
-- `React_Frontend`: Vite React app on `http://localhost:5173`
-- `my-app`: Next.js app on `http://localhost:3000`
+---
 
-Both frontends call the same backend endpoints and provide backend status and
-JSON echo functionality.
+## 1. Backend Setup
 
-## Project structure
+The backend is located in the `backend/` folder. It provides two interchangeable server implementations:
+- **FastAPI backend**: `main.py`
+- **Flask backend**: `app.py`
 
-```text
-Demo/
-├── backend/
-│   └── main.py
-├── React_Frontend/
-│   ├── src/
-│   └── package.json
-├── my-app/
-│   ├── app/
-│   └── package.json
-└── README.md
-```
+Both implement the exact same REST API endpoints, CORS policies, and Supabase / SQLite database schema.
 
-## Prerequisites
-
-Install the following software:
-
-- Python 3.10 or newer
-- Node.js 18.18 or newer
-- npm
-
-Check installed versions:
-
-```bash
-python --version
-node --version
-npm --version
-```
-
-## 1. Set up the backend
-
-Open a terminal at the workspace root:
+### Installation
 
 ```bash
 cd backend
-python -m venv .venv
+pip install -r requirements.txt
 ```
 
-Activate the virtual environment.
+### Database Configuration (Supabase or SQLite)
 
-Linux/macOS:
+1. Open `backend/.env`.
+2. To connect to **Supabase**:
+   - Go to your [Supabase Dashboard](https://supabase.com/dashboard).
+   - In your project, click **Connect**.
+   - Select **Session pooler** (or Direct connection string).
+   - Copy the URI and replace `[YOUR-PASSWORD]` with your Supabase database password.
+   - Set it in `backend/.env`:
+     ```env
+     DATABASE_URL=postgresql://postgres.yourref:[YOUR-PASSWORD]@aws-0-region.pooler.supabase.com:5432/postgres
+     ```
+3. If `DATABASE_URL` is omitted or commented out, the backend automatically defaults to a local SQLite database (`demo.db`).
 
-```bash
-source .venv/bin/activate
-```
+### Running the Backend
 
-Windows PowerShell:
+You can run either backend on `http://localhost:8000`:
 
-```powershell
-.venv\Scripts\Activate.ps1
-```
+- **Option A: FastAPI**
+  ```bash
+  python main.py
+  # or: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+  # Interactive API Docs: http://localhost:8000/docs
+  ```
 
-Install the backend packages:
+- **Option B: Flask**
+  ```bash
+  python app.py
+  # or: flask --app app run --port 8000 --debug
+  ```
 
-```bash
-python -m pip install --upgrade pip
-python -m pip install fastapi uvicorn
-```
+### API Endpoints
 
-Start the backend:
+| Method | Path | Purpose | Sample Response |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/` | Service status check | `{"message": "Demo backend is running"}` |
+| `GET` | `/health` | Health check endpoint | `{"status": "ok"}` |
+| `POST` | `/echo` | Stores payload in DB and returns it | `{"data": { ... }}` |
+| `GET` | `/messages` | Returns up to 50 latest saved records | `[{"id": 1, "data": { ... }}]` |
+| `DELETE` | `/messages/{id}` | Deletes record by ID | `{"deleted": 1}` |
+| `POST` | `/auth/verify` | Token/Google Auth verify helper | `{"authenticated": true, ...}` |
 
-```bash
-python main.py
-```
+---
 
-The API is now available at `http://localhost:8000`.
+## 2. Frontend Setup
 
-Keep this terminal running.
-
-## 2. Set up the Vite React frontend
-
-Open a second terminal at the workspace root:
-
+### Vite React Frontend
 ```bash
 cd React_Frontend
 npm install
 npm run dev
+# Running on http://localhost:5173
 ```
+See [React_Frontend/FLOW.md](React_Frontend/FLOW.md) for detailed React flow.
 
-Open `http://localhost:5173` in a browser.
-
-Useful commands:
-
-```bash
-npm run lint
-npm run build
-npm run preview
-```
-
-## 3. Set up the Next.js frontend
-
-Open another terminal at the workspace root:
-
+### Next.js Frontend
 ```bash
 cd my-app
 npm install
 npm run dev
+# Running on http://localhost:3000
 ```
+See [my-app/FLOW.md](my-app/FLOW.md) for detailed Next.js flow.
 
-Open `http://localhost:3000` in a browser.
+---
 
-Useful commands:
+## 3. CORS Configuration
 
-```bash
-npm run lint
-npm run build
-npm run start
-```
-
-Only one frontend is needed for normal use. Both can run at the same time and
-share the same backend if ports `3000` and `5173` are available.
-
-## Backend API
-
-| Method | URL | Description |
-| --- | --- | --- |
-| `GET` | `http://localhost:8000/` | Returns the backend running message |
-| `GET` | `http://localhost:8000/health` | Returns the health status |
-| `POST` | `http://localhost:8000/echo` | Returns the submitted JSON under `data` |
-
-Example API checks:
-
-```bash
-curl http://localhost:8000/
-curl http://localhost:8000/health
-curl -X POST http://localhost:8000/echo \
-  -H "Content-Type: application/json" \
-  -d '{"message":"hello"}'
-```
-
-Expected echo response:
-
-```json
-{
-  "data": {
-    "message": "hello"
-  }
-}
-```
-
-## How connectivity works
-
-1. The browser opens either the Vite app or the Next.js app.
-2. The frontend sends `GET /` and `GET /health` to port `8000`.
-3. The backend returns JSON and the frontend displays the message and health.
-4. The user submits a JSON payload from the echo form.
-5. The frontend sends `POST /echo` to port `8000`.
-6. FastAPI returns the payload inside a `data` property.
-7. The frontend displays the formatted response or an error.
-
-The backend CORS configuration allows these frontend origins:
-
-- `http://localhost:3000`
-- `http://127.0.0.1:3000`
-- `http://localhost:5173`
-- `http://127.0.0.1:5173`
-
-## Detailed flow documentation
-
-Read both files to understand the implementation in more detail:
-
-- [React frontend flow](React_Frontend/FLOW.md): Vite startup, React mounting,
-  state, requests, and styling.
-- [Next.js flow](my-app/FLOW.md): App Router layout, page composition,
-  hydration, client requests, and styling.
-
-## Troubleshooting
-
-### Backend unavailable
-
-Confirm that the backend terminal is running and listening on port `8000`:
-
-```bash
-curl http://localhost:8000/health
-```
-
-### CORS error
-
-Use the correct frontend URL and confirm its origin is listed in
-`backend/main.py`. Restart the backend after changing CORS settings.
-
-### Port already in use
-
-Stop the process using the port, or start the frontend on another port. The
-frontend fetch URLs currently target port `8000` for the backend.
-
-### Invalid echo payload
-
-The echo endpoint expects a JSON object. For example:
-
-```json
-{
-  "message": "Hello from the frontend"
-}
-```
+Both backend implementations automatically permit browser requests from:
+- `http://localhost:5173` & `http://127.0.0.1:5173` (Vite)
+- `http://localhost:3000` & `http://127.0.0.1:3000` (Next.js)
+- Any comma-separated origins specified in the `FRONTEND_ORIGINS` environment variable (for production deployment).
